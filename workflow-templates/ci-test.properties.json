@@ -1,0 +1,8 @@
+{
+    "name": "CI test server",
+    "description": "CI test starter workflow.",
+    "iconName": "example-icon",
+    "categories": [
+        "PHP"
+    ]
+}
