@@ -1,0 +1,39 @@
+name: Deploy test
+
+on:
+  push:
+    branches:
+      - develop
+      - release
+
+  # trigger deployment manually
+  workflow_dispatch:
+    inputs:
+      enable_test:
+        required: false
+        type: string
+        default: 'true'
+        description: 'enable test'
+
+jobs:
+  build:
+    name: 'Build'
+    uses: unieditions/uned-dev-env/.github/workflows/build.yml@RUN-000-deploy-apps
+    secrets:
+      ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
+    with:
+      app: ${{ vars.APP_CODE }}
+      common_branch: ${{ github.ref_name }}
+
+  deploy:
+    name: 'Deploy'
+    needs: [ 'build' ]
+    uses: unieditions/uned-dev-env/.github/workflows/deploy.yml@RUN-000-deploy-apps
+    secrets:
+      ssh_key: ${{ secrets.SSH_BASCULE_SERVER_PRIVATE_KEY }}
+    with:
+      app: ${{ vars.APP_CODE }}
+      environnement: test
+      ci-user: 'uniedi'
+      port: 2207
+      failure_message: "MET ${{ vars.APP_CODE }} KO => branch name : ${{ github.ref_name }}"
